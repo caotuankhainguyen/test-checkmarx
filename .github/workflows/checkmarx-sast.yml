@@ -7,22 +7,22 @@ on:
 
 jobs:
   sast_scan:
-    # dùng runner nội bộ (Windows) của bạn
     runs-on: [self-hosted, Windows, X64]
 
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      # Gửi source lên CxSAST 9.x và trigger scan
       - name: Run Checkmarx SAST
-        uses: checkmarx-ts/checkmarx-github-action@v2
+        # ↓ đổi v2 thành v1
+        uses: checkmarx-ts/checkmarx-github-action@v1
+        env:
+          # Nếu server dùng chứng chỉ tự ký, bật dòng này để thử nhanh (sau đó hãy import CA cho chuẩn)
+          # NODE_TLS_REJECT_UNAUTHORIZED: 0
         with:
-          cxServer:   ${{ secrets.CX_SERVER }}
-          cxUsername: ${{ secrets.CX_USER }}
+          cxServer:   ${{ secrets.CX_SERVER }}   # ví dụ: https://nfrcxsast
+          cxUsername: ${{ secrets.CX_USER }}     # admin_sast
           cxPassword: ${{ secrets.CX_PASS }}
           cxTeam:     ${{ secrets.CX_TEAM || '\CxServer' }}
           projectName: "test-checkmarx"
           preset: "Checkmarx Default"
-          # Nếu repo lớn hoặc cần nhanh hơn sau lần đầu:
           # incremental: true
